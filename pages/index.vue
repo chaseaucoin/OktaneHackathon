@@ -1,24 +1,15 @@
 <template>
   <section class="container">
     <div>
-      <logo />
       <h1 class="title">
         OktaneHackathon
       </h1>
       <h2 class="subtitle">
         Live Negotiation App for Oktane 2019 Hackathon
       </h2>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          class="button--green"
-        >Documentation</a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          class="button--grey"
-        >GitHub</a>
+      <div>        
+        <button v-if='authenticated' v-on:click='logout' id='logout-button'> Logout </button>
+        <button v-else v-on:click='login' id='login-button'> Login </button>
       </div>
     </div>
   </section>
@@ -27,10 +18,31 @@
 <script>
 import Logo from '~/components/Logo.vue'
 
-export default {
-  components: {
-    Logo
+export default {  
+  data: function () {
+    return {
+      authenticated: false
+    }
+  },
+  created () {
+    this.isAuthenticated()
+  },
+  methods: {
+    async isAuthenticated () {
+      this.authenticated = await this.$auth.isAuthenticated()
+    },
+    async login(){
+      this.$auth.loginRedirect(this.$route.path)      
+    },
+    async logout () {
+      await this.$auth.logout()
+      await this.isAuthenticated()
+
+      // Navigate back to home
+      this.$router.push({ path: '/' })
+    }
   }
+
 }
 </script>
 
